@@ -1,0 +1,17 @@
+# 真实记忆库（隐私：不要提交）
+memories/
+
+# 解压/提取的临时文件
+_*.cjs
+_*.json
+_*.py
+_*.html
+_*.txt
+
+# Python
+__pycache__/
+*.pyc
+
+# 系统
+.DS_Store
+Thumbs.db
