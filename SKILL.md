@@ -1,6 +1,6 @@
 ---
 name: memory
-description: 使用 mem.py 双层记忆系统（树状时间存档 + FTS5 中文全文检索 + MEMORY.md 常驻层）。当用户提到"记忆/回忆/上次说过/之前讨论/记录下来/别忘了"或需要跨会话引用历史对话、检索旧结论、删除某段记忆时使用。维护两层纪律：常驻层存高频事实，存档层存完整对话，检索永远先摘要后全文。
+description: 使用 mem.py 双层记忆系统（树状时间存档 + FTS5关键词+语义向量双通道检索 + 自动捕获 + MEMORY.md 常驻层）。当用户提到"记忆/回忆/上次说过/之前讨论/记录下来/别忘了"或需要跨会话引用历史对话、检索旧结论、删除某段记忆时使用。维护两层纪律：常驻层存高频事实，存档层存完整对话，检索永远先摘要后全文。
 ---
 
 # 记忆系统 (mem.py)
@@ -19,7 +19,7 @@ description: 使用 mem.py 双层记忆系统（树状时间存档 + FTS5 中文
 |---|---|
 | 记录一次对话 | python D:\dsh\260815\mem.py add "标题" -t "标签1,标签2" -s "结构化摘要" --content "正文" |
 | 追加同主题内容 | 加 --append（追加到同日期文件；跨日期用 --date YYYY-MM-DD HH:MM 指定） |
-| 检索 | python D:\dsh\260815\mem.py search "关键词" -k 3（先摘要后全文，Top-K） |
+| 检索 | python D:\dsh\260815\mem.py search "关键词" -k 3（语义向量+关键词双通道，换种说法也能搜到） |
 | 生成注入块 | python D:\dsh\260815\mem.py inject "关键词" -k 3（输出 memory 块，直接拼进回答上下文） |
 | 读完整记忆 | python D:\dsh\260815\mem.py get "notes/YYYY/MM/DD-标题.md" |
 | 按时间浏览 | python D:\dsh\260815\mem.py list [YYYY-MM] |
@@ -27,6 +27,13 @@ description: 使用 mem.py 双层记忆系统（树状时间存档 + FTS5 中文
 | 删除记忆 | python D:\dsh\260815\mem.py rm "路径"（进回收站，trash 查看、restore 文件名 恢复）；rm --hard 永久删除 |
 | 重建索引 | 手工改过文件后运行 python D:\dsh\260815\mem.py index（重建 FTS5 + 重新生成 _index.md） |
 | 月度聚合 | python D:\dsh\260815\mem.py rollup YYYY-MM，然后由模型把机械列表合并成 3-5 条粗粒度摘要写回该文件 |
+| 待整理缓冲 | python D:\dsh\260815\mem.py pending（查看自动捕获的用户原话） |
+
+## 自动捕获（重要）
+
+- **插件会自动把每轮用户消息原文**追加到 notes/pending/日期.md（兜底层，防漏记）。
+- **你的强制流程**：每次有信息量的对话结束（有结论/决定/偏好/约定产出），**必须主动调用 memory_add** 写入结构化摘要——不要等用户说"记一下"。这就是自动记忆：模型负责提炼，插件负责兜底。
+- 缓冲整理：`mem.py pending` 查看待整理原话，有价值的用 add 结构化入库。
 
 ## 触发时机
 
