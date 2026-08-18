@@ -27,7 +27,7 @@ python mem.py init
 
 `install.py` 会渲染 `SKILL.md.tpl` 模板中的 `{{MEM_PY}}`/`{{MEMORY_HOME}}` 为你的真实路径，写入 `$DSH_HOME/skills/memory/SKILL.md`——任何机器克隆后跑一次即用，不需要改任何代码。
 
-**可选：语义检索**（换种说法也能搜到，如「我讨厌辣」→「饮食偏好」）：
+**可选：语义检索**（换种说法也能搜到，如「不爱吃辣」→「饮食偏好」）：
 
 ```bash
 pip install fastembed   # 首次会联网下载 bge-small-zh 模型（约 100MB），之后离线
