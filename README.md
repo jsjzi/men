@@ -5,25 +5,35 @@
 ## 特性
 
 - **三层结构**：常驻层（MEMORY.md，≤2200 字符，会话开始注入）＋ 存档层（notes/年/月 时间树）＋ 检索层（SQLite FTS5 trigram 中文全文搜索）
-- **两阶段检索**：先搜摘要层（命中率 ≥80%），miss 再搜全文；Top-K 注入，单次 ≤2k token
+- **双通道检索**：语义向量（bge-small-zh 512 维，换种说法也能搜到）＋ FTS5 关键词，先摘要层后全文层；Top-K 注入，单次 ≤2k token
 - **零 token 存储与检索**：只有注入才花钱，与记忆总量无关
 - **删除安全网**：软删除进回收站可恢复，段落级编辑删除
 - **原子写入**：临时文件 + 改名，写一半崩溃不损坏
 - **月度聚合**：rollup 自动生成月度摘要，防摘要过期
 - **全局记忆库**：默认 $DSH_HOME/memories，跨所有工作区共享
 
-## 安装
+## 安装（自动适配任何用户，零硬编码）
 
 ```bash
 # 1. 克隆本项目
 git clone <你的仓库地址> && cd mem-py
 
-# 2. 初始化记忆库（默认 $DSH_HOME/memories；可用 MEMORY_HOME 覆盖）
-python mem.py init
+# 2. 一键安装：自动检测 $DSH_HOME，把技能装好（路径自动适配本机）
+python install.py
 
-# 3. （可选）安装为 DSH 技能：把 SKILL.md 复制到
-#    $DSH_HOME/skills/memory/SKILL.md
+# 3. 初始化记忆库（默认 $DSH_HOME/memories；可用 MEMORY_HOME 覆盖）
+python mem.py init
 ```
+
+`install.py` 会渲染 `SKILL.md.tpl` 模板中的 `{{MEM_PY}}`/`{{MEMORY_HOME}}` 为你的真实路径，写入 `$DSH_HOME/skills/memory/SKILL.md`——任何机器克隆后跑一次即用，不需要改任何代码。
+
+**可选：语义检索**（换种说法也能搜到，如「我讨厌辣」→「饮食偏好」）：
+
+```bash
+pip install fastembed   # 首次会联网下载 bge-small-zh 模型（约 100MB），之后离线
+```
+
+未安装 fastembed 时自动退回纯关键词检索（零依赖底线不变）。
 
 要求：Python 3.10+（SQLite 自带 FTS5 trigram 分词）。
 
